@@ -1,0 +1,65 @@
+import requests
+from bs4 import BeautifulSoup
+import re
+import csv
+
+# Effectue une requête HTTP vers la page cible
+page = requests.get("https://www.affare.tn/petites-annonces/grand-tunis/vente-appartement?page={}").content
+
+def save_to_csv(data, filename="immobiliers.csv"):
+    """Enregistrer les données dans un fichier CSV existant sans l'écraser."""
+    # Ouvrir le fichier en mode 'append' pour ajouter les nouvelles lignes sans supprimer les anciennes
+    with open(filename, mode='a', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        
+        # Vérifier si le fichier est vide pour ajouter l'en-tête (une seule fois)
+        if file.tell() == 0:
+            writer.writerow(['Titre', 'Prix', 'Type de transaction', 'Pièces'])  # Écrire l'en-tête une seule fois
+        
+        writer.writerows(data)  # Ajouter les nouvelles lignes de données
+
+def main(page):
+    details = []  # Liste pour stocker les annonces
+
+    # Ajouter une boucle pour parcourir les pages de 1 à 25
+    for page_number in range(1, 26):  # De la page 1 à la page 25
+        page_url = f"https://www.affare.tn/petites-annonces/grand-tunis/vente-appartement?page={page_number}"
+        src = requests.get(page_url).content
+        soup = BeautifulSoup(src, "lxml")
+
+        # Recherche les éléments contenant les annonces
+        app = soup.find_all(id='main-content', class_='col-xs-12')
+
+        def get_app_info(app):
+            all_details = app.find_all('div', class_='AnnoncesList_product_x__S7zyQ')
+            number_of_annonce = len(all_details)
+            print(f"Nombre d'annonces sur la page {page_number}: {number_of_annonce}")
+
+            for i in range(number_of_annonce):
+                try:
+                    title = all_details[i].find('div', class_='AnnoncesList_item_title__nyLLv')
+                    title = title.text.strip() if title else "Titre non spécifié"
+
+                    price = all_details[i].find('span', class_='AnnoncesList_price__UW8bm')
+                    price = price.text.strip() if price else "Prix non spécifié"
+
+                    Type_de_transaction = all_details[i].find('p', class_='one-line')
+                    Type_de_transaction = Type_de_transaction.text.strip() if Type_de_transaction else "Type non spécifié"
+
+                    pieces = re.search(r'S\+\d+', title)
+                    pieces_value = pieces.group() if pieces else "Non spécifié"
+
+                    details.append([title, price, Type_de_transaction, pieces_value])  # Ajouter chaque annonce dans la liste 'details'
+                    print(f"Title: {title}, Price: {price}, Type: {Type_de_transaction}, Pieces: {pieces_value}")
+
+                except Exception as e:
+                    print(f"Erreur pour une annonce : {e}")
+
+        # Appel de la fonction pour chaque élément de la liste 'app'
+        for annonce in app:
+            get_app_info(annonce)
+
+    # Enregistrement des résultats dans le fichier CSV
+    save_to_csv(details, "immobiliers.csv")  # Remplacer "immobiliers.csv" par le nom de ton fichier existant
+
+main(page)
