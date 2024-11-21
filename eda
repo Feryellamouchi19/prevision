@@ -1,0 +1,97 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.preprocessing import MinMaxScaler
+
+# 1. Chargement des données
+data = pd.read_csv(r'C:\Users\21658\Desktop\ds_prevision\dataset.csv')  # Remplacez par votre chemin
+print("Aperçu des données :")
+print(data.head())
+
+# Informations sur les données
+print("Résumé des données :")
+print(data.info())
+
+# 2. Nettoyage des données
+# Conversion des colonnes en types appropriés
+data['Prix'] = pd.to_numeric(data['Prix'], errors='coerce')
+data['Superficie'] = pd.to_numeric(data['Superficie'], errors='coerce')
+
+# Suppression des lignes avec des valeurs manquantes pour 'Prix' et 'Superficie'
+data.dropna(subset=['Prix', 'Superficie'], inplace=True)
+
+# Vérification après nettoyage
+print("Données après nettoyage :")
+print(data.info())
+print("Nombre total de lignes :", data.shape[0])
+
+# 3. Analyse exploratoire
+# Distribution des prix
+plt.figure(figsize=(10, 6))
+sns.histplot(data['Prix'], bins=30, kde=True)
+plt.title('Distribution des prix')
+plt.xlabel('Prix')
+plt.ylabel('Fréquence')
+plt.show()
+
+# Relation entre la superficie et le prix
+plt.figure(figsize=(10, 6))
+sns.scatterplot(x='Superficie', y='Prix', data=data, hue='Localisation')
+plt.title('Relation entre la superficie et le prix')
+plt.xlabel('Superficie (m²)')
+plt.ylabel('Prix (TND)')
+plt.show()
+
+# Prix moyen par localisation
+prix_par_localisation = data.groupby('Localisation')['Prix'].mean()
+print("\nPrix moyen par localisation :")
+print(prix_par_localisation)
+
+# Prix moyen par catégories de superficie
+bins = [0, 50, 100, 150, 200, np.inf]
+labels = ['<50m²', '50-100m²', '100-150m²', '150-200m²', '>200m²']
+data['Categorie_Superficie'] = pd.cut(data['Superficie'], bins=bins, labels=labels)
+prix_par_superficie = data.groupby('Categorie_Superficie')['Prix'].mean()
+print("\nPrix moyen par catégories de superficie :")
+print(prix_par_superficie)
+
+# Visualisation des prix moyens par catégories de superficie
+plt.figure(figsize=(10, 6))
+prix_par_superficie.plot(kind='bar', color='orange')
+plt.title("Prix moyen des appartements par catégorie de superficie")
+plt.xlabel("Catégorie de superficie")
+plt.ylabel("Prix moyen (en DT)")
+plt.xticks(rotation=45)
+plt.show()
+# Relation entre prix et étage
+plt.figure(figsize=(10, 6))
+sns.boxplot(x='Étage', y='Prix', data=data)
+plt.title('Distribution des prix par étage')
+plt.xlabel('Étage')
+plt.ylabel('Prix (TND)')
+plt.xticks(rotation=45)
+plt.show()
+# Heatmap des corrélations
+plt.figure(figsize=(10, 6))
+correlation_matrix = data[['Prix', 'Superficie', 'Salles de bains', 'Chambres']].corr()
+sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt=".2f", linewidths=0.5)
+plt.title('Matrice de corrélation')
+plt.show()
+
+
+# 4. Transformation des données
+# Normalisation des colonnes Superficie et Prix
+scaler = MinMaxScaler()
+data[['Superficie_norm', 'Prix_norm']] = scaler.fit_transform(data[['Superficie', 'Prix']])
+
+# Ajouter une colonne Prix en DT
+data['Prix_DT'] = data['Prix'].apply(lambda x: f"{x:.2f} DT")
+
+# Vérification des transformations
+print("Aperçu des données après transformations :")
+print(data.head())
+
+# 5. Sauvegarde des résultats
+data.to_csv('resultats_analyse_appartements.csv', index=False)
+print("Données sauvegardées dans 'resultats_analyse_appartements.csv'")
