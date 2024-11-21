@@ -1,0 +1,66 @@
+Rapport de Projet : Analyse des Prix des Appartements à Tunis 
+
+
+1. Introduction 
+
+Le marché immobilier est un secteur clé dans l'économie de toute région, et comprendre les facteurs influençant les prix des appartements est essentiel pour prendre des décisions éclairées. Ce projet a pour objectif d'analyser les prix des appartements dans la région du Grand Tunis, en se concentrant sur des éléments tels que la superficie, la localisation, et d'autres caractéristiques influençant le prix. 
+
+2. Objectif du Projet 
+
+L'objectif principal de ce projet est d'analyser les prix des appartements en fonction de diverses caractéristiques telles que : 
+
+La localisation de l'appartement (ex. Tunis, Kram, Ariana, etc.). 
+
+La superficie des appartements (exprimée en m²). 
+
+Le type de bien et la configuration des pièces. 
+
+3. Méthodologie 
+
+3.1. Collecte et Prétraitement des Données 
+
+Les données ont été extraites d'une base de données d'annonces immobilières, contenant plusieurs informations sur les appartements à vendre, telles que : 
+
+Le prix de l'appartement. 
+
+La localisation de l'appartement. 
+
+La superficie de l'appartement. 
+
+La configuration des pièces, etc. 
+
+Nous avons effectué un nettoyage des données, en supprimant les doublons, en traitant les valeurs manquantes, et en assurant que toutes les données étaient dans un format utilisable. 
+
+3.2. Analyse des Données 
+
+Une fois les données préparées, nous avons effectué une analyse exploratoire (EDA) pour identifier les relations entre les différentes variables et le prix des appartements. Cette analyse comprenait : 
+
+L'exploration de la distribution des prix selon la localisation et la superficie. 
+
+La création de catégories de superficie pour mieux comprendre l'effet de la taille des appartements sur leur prix. 
+
+L'analyse des prix moyens par localisation et par catégorie de superficie 
+
+ 
+
+4. Résultats de l'Analyse 
+
+4.1. Prix Moyen par Localisation 
+
+L'analyse des prix moyens des appartements selon les localisations a révélé que les appartements situés dans des quartiers tels que Tunis et El Manar ont des prix moyens significativement plus élevés que dans d'autres zones comme Cité El Khadra ou Kram. Cela peut être attribué à la demande plus forte et à la proximité des centres économiques et commerciaux. 
+
+4.2. Prix Moyen par Catégorie de Superficie 
+
+Les résultats montrent que les appartements de grande superficie (au-dessus de 150m²) ont tendance à avoir des prix plus élevés, tandis que les appartements de superficie plus petite (moins de 50m²) ont des prix plus bas. Cependant, il a été observé que certaines catégories de superficie avaient des valeurs manquantes en raison de données incomplètes. 
+
+4.3. Analyse de la Corrélation entre Superficie et Prix 
+
+Une analyse de corrélation a montré que la superficie des appartements a une forte influence sur leur prix. Les appartements plus grands ont tendance à coûter plus cher, ce qui est logique dans un contexte où la demande pour de grands espaces est plus forte 
+
+5. Conclusion 
+
+Ce projet a permis de mieux comprendre les facteurs influençant le prix des appartements dans le Grand Tunis. À travers des analyses descriptives et des transformations de données, nous avons pu identifier des tendances intéressantes concernant les prix en fonction de la localisation et de la superficie. Les résultats peuvent être utilisés pour informer les décisions d'investissement immobilier et aider à la prévision des tendances futures du marché. 
+
+ 
+
+ 
