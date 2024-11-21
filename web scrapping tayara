@@ -1,0 +1,68 @@
+import requests
+from bs4 import BeautifulSoup
+import re
+import csv
+categories_path = ["Grand Tunis"]
+base_url = "https://www.tecnocasa.tn//{}/?page={}"
+for category in categories_path:
+    for page in range(1, 38):  # Limiter à 5 pages pour l'exemple
+        url = base_url.format(category, page)
+        response = requests.get(url)
+        soup = BeautifulSoup(response.text, 'html.parser')
+# vs pouvez inspecter https://www.tayara.tn/item/66eae8a467b755ba922a2a58/Immobilier%20Neuf/Ariana/Ghazela/Appartement_en_S2_de_12880_m_A41_au_4me_tage/
+def get_all_links(soup):
+    property_links = []
+    for div in soup.find_all('div', class_="estate-card"):
+        link = div.find('a')['href']
+        if '/item/' in link:
+            full_url = "https://www.tecnocasa.tn/" + link
+            property_links.append(full_url)
+    return property_links
+all_fieldnames = set()
+def crawl_property_page(url):
+
+    response = requests.get(url)
+    soup = BeautifulSoup(response.content, 'html.parser')
+    item_info = {}
+    
+    try:
+        # Titre
+        title = soup.find('h3', class_='estate-card-title').text.strip()
+        # Localisation
+        location = soup.find('h4', class_='estate-card-subtitle').text.strip()
+        # Configuration des pièces
+        pieces = soup.find('span', class_='estate-card-data-element estate-card-rooms').text.strip()
+        pieces_value = pieces.group() if pieces else None
+        #prix:
+        price = soup.find('div', class_='estate-card-current-price').text.strip()
+        # Ajouter les informations de base
+        item_info['Annonce'] = title
+        item_info['Prix'] = price
+        item_info['Localisation'] = location
+        item_info['Configuration des pièces'] = pieces_value
+    
+    except AttributeError:
+        print("Une information n'a pas pu être extraite correctement.")
+        return None
+property_links = get_all_links(soup)
+ # Exemple avec le lien https://www.tayara.tn/item/66eae8a467b755ba922a2a58/Immobilier%20Neuf/Ariana/Ghazela/Appartement_en_S2_de_12880_m_A41_au_4me_tage/
+data = crawl_property_page(property_links[1])
+print(data)
+def save_to_csv(data, filename="immobiliers.csv"):
+    if not data:
+        print("Aucune donnée à sauvegarder.")
+        return
+    with open(filename, mode='w', newline='', encoding='utf-8') as file:
+        fieldnames = data[0].keys() # features
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+        writer.writeheader()
+        for row in data:
+            writer.writerow(row)
+# test sur un seul élément
+# save_to_csv(data, "immobiliers.csv")
+data = []
+for link in property_links:
+    data.append(crawl_property_page(link))
+save_to_csv(data, "techno.csv") 
+   
+
